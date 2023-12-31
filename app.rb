@@ -148,6 +148,33 @@ class BST
     values unless block_given?
   end
 
+  def inorder(node = @root, &block)
+    return [] if node.nil?
+    values = []
+    values.concat(inorder(node.left, &block)) if node.left
+    block_given? ? yield(node.value) : values.append(node.value)
+    values.concat(inorder(node.right, &block)) if node.right
+    values
+  end
+
+  def preorder(node = @root, &block)
+    return [] if node.nil?
+    values = []
+    block_given? ? yield(node.value) : values.append(node.value)
+    values.concat(preorder(node.left, &block)) if node.left
+    values.concat(preorder(node.right, &block)) if node.right
+    values
+  end
+
+  def postorder(node = @root, &block)
+    return [] if node.nil?
+    values = []
+    values.concat(postorder(node.left, &block)) if node.left
+    values.concat(postorder(node.right, &block)) if node.right
+    block_given? ? yield(node.value) : values.append(node.value)
+    values
+  end
+
   def pretty_print(node = @root, prefix = '', is_left = true)
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.value}"
@@ -158,4 +185,4 @@ end
 arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 my_tree = BST.new(arr)
 my_tree.pretty_print
-my_tree.level_order { |node| puts node.value }
+my_tree.postorder { |value| puts value }
