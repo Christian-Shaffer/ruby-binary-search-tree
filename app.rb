@@ -180,9 +180,51 @@ class BST
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.value}"
     pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left
   end
+
+  def height(node)
+    return -1 if node.nil?
+
+    left_height = height(node.left)
+    right_height = height(node.right)
+    [left_height, right_height].max + 1 # Return the greater of the two heights, plus 1 for the current node
+  end
+
+  def depth(node)
+    return nil if @root.nil? || node.nil? # Return nil if the tree is empty or the node is nil
+
+    depth = 0
+    current_node = node
+    # Traverse up the tree from the node to the root
+    while current_node != @root
+      break unless current_node  # If the node is somehow not connected to the root, exit the loop
+      current_node = find_parent(current_node)
+      depth += 1
+    end
+    depth # Return the depth of the node
+  end
+
+  # Helper method to find the parent of a given node
+  def find_parent(node)
+    return nil if @root.nil? || @root == node # The root has no parent
+
+    current_node = @root
+    while current_node
+      return current_node if current_node.left == node || current_node.right == node
+
+      if node.value < current_node.value
+        current_node = current_node.left
+      else
+        current_node = current_node.right
+      end
+    end
+    nil  # Return nil if no parent is found (which shouldn't happen if the tree is intact)
+  end
 end
 
 arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 my_tree = BST.new(arr)
 my_tree.pretty_print
-my_tree.postorder { |value| puts value }
+node_eight = my_tree.find(8)
+node_nine = my_tree.find(9)
+my_tree.height(node_eight)
+puts my_tree.depth(node_nine)
