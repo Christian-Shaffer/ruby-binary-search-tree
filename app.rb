@@ -123,8 +123,6 @@ class BST
     return if root.nil?
     current_node = @root
     previous_node = nil
-
-    # Find the node to delete
     while current_node && current_node.value != value
       previous_node = current_node
       if value < current_node.value
@@ -137,6 +135,19 @@ class BST
     current_node
   end
 
+  def level_order
+    return [] if @root.nil?
+    queue = [@root]
+    values = []
+    while !queue.empty?
+      current_node = queue.shift
+      block_given? ? yield(current_node) : values.append(current_node.value)
+      queue.append(current_node.left) if current_node.left
+      queue.append(current_node.right) if current_node.right
+    end
+    values unless block_given?
+  end
+
   def pretty_print(node = @root, prefix = '', is_left = true)
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.value}"
@@ -144,8 +155,7 @@ class BST
   end
 end
 
-arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] # add to this
+arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 my_tree = BST.new(arr)
-my_tree.delete(11)
-p my_tree.find(5)
 my_tree.pretty_print
+my_tree.level_order { |node| puts node.value }
