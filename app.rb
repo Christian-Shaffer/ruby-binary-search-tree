@@ -219,12 +219,25 @@ class BST
     end
     nil  # Return nil if no parent is found (which shouldn't happen if the tree is intact)
   end
+
+  def balanced?(node = @root)
+    return [0, true] if node.nil?  # A nil node has height 0 and is balanced
+
+    left_height, left_balanced = balanced?(node.left)
+    right_height, right_balanced = balanced?(node.right)
+
+    current_height = [left_height, right_height].max + 1
+    is_balanced = (left_height - right_height).abs <= 1 && left_balanced && right_balanced
+
+    node == @root ? is_balanced : [current_height, is_balanced]  # Return both the height and balance status
+  end
+
+  def rebalance
+    node_values = self.inorder
+    @root = build_tree(node_values)
+  end
 end
 
-arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+arr = (Array.new(15) { rand(1..100) })
 my_tree = BST.new(arr)
 my_tree.pretty_print
-node_eight = my_tree.find(8)
-node_nine = my_tree.find(9)
-my_tree.height(node_eight)
-puts my_tree.depth(node_nine)
